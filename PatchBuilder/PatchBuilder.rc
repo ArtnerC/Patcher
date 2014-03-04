@@ -1,0 +1,237 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#include ""res\\PatchBuilder.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\PatchBuilder.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_PATCHBUILDER_DIALOG DIALOGEX 0, 0, 424, 318
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_MINIMIZEBOX | 
+    WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "Patch Making Utility"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    GROUPBOX        "Patch Settings",IDC_STATIC,5,6,192,120
+    GROUPBOX        "Current Version Directory:",IDC_STATIC,12,90,180,30
+    PUSHBUTTON      "Browse..",IDC_CURRENT_DIRECTORY_BROWSE,150,102,38,14
+    EDITTEXT        IDC_CURRENT_DIRECTORY,18,102,126,14,ES_AUTOHSCROLL
+    GROUPBOX        "Old Version Directory:",IDC_STATIC,12,54,180,30
+    PUSHBUTTON      "Browse..",IDC_OLD_DIRECTORY_BROWSE,150,66,38,14
+    EDITTEXT        IDC_OLD_DIRECTORY,18,67,126,14,ES_AUTOHSCROLL
+    GROUPBOX        "Old Version:",IDC_STATIC,12,18,72,30
+    EDITTEXT        IDC_OLD_VERSION,18,30,60,14,ES_AUTOHSCROLL
+    GROUPBOX        "Current Version:",IDC_STATIC,120,18,72,30
+    EDITTEXT        IDC_CURRENT_VERSION,126,30,60,14,ES_AUTOHSCROLL
+    GROUPBOX        "Patch Options:",IDC_STATIC,209,6,210,66
+    CONTROL         "Compare File Time",IDC_COMPARE_FILE_TIME,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,216,18,74,10
+    CONTROL         "Compare Version",IDC_COMPARE_VERSION,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,216,31,70,10
+    CONTROL         "Ignore Attributes",IDC_IGNORE_ATTRIBUTES,"Button",
+                    BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,342,57,71,10
+    CONTROL         "Find File",IDC_FIND_FILE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,216,57,42,11
+    CONTROL         "Ignore File Time",IDC_IGNORE_FILE_TIME,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,342,18,67,10
+    CONTROL         "Ignore Version",IDC_IGNORE_VERSION,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,342,31,63,10
+    CONTROL         "Ignore Read Only",IDC_IGNORE_READ_ONLY,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,342,44,72,10
+    CONTROL         "Backup File",IDC_BACKUP_FILE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,216,44,51,10
+    GROUPBOX        "Status:",IDC_STATIC,7,280,348,31
+    LTEXT           "Idle...",IDC_STATUS,12,294,336,8,0,WS_EX_RIGHT
+    GROUPBOX        "Patch File:",IDC_STATIC,5,132,192,90
+    GROUPBOX        "Minor Patch:",IDC_STATIC,12,180,180,36
+    CONTROL         "If checked, files that dont exist in the new version will not be deleted.",
+                    IDC_MINOR_PATCH,"Button",BS_AUTOCHECKBOX | BS_MULTILINE | 
+                    WS_TABSTOP,18,193,162,18
+    GROUPBOX        "File Patch Directory:",IDC_STATIC,12,144,180,30
+    EDITTEXT        IDC_FILE_PATCH_DIRECTORY,18,156,108,14,ES_AUTOHSCROLL
+    CONTROL         "Default Path",IDC_DEFAULT_PATH,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,132,156,56,10
+    GROUPBOX        "Updater Info File:",IDC_STATIC,209,78,210,84
+    GROUPBOX        "Updater Directory:",IDC_STATIC,216,90,198,30
+    EDITTEXT        IDC_UPDATER_DIRECTORY,222,102,144,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse..",IDC_UPDATER_DIRECTORY_BROWSE,372,102,38,14
+    GROUPBOX        "Applied Version",IDC_STATIC,216,126,132,30
+    CONTROL         "Default Version",IDC_DEFAULT_VERSION,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,282,138,60,10
+    GROUPBOX        "Build Separate:",IDC_STATIC,354,126,60,30
+    PUSHBUTTON      "Build File",IDC_BUTTON_BUILD_UPDATER,360,138,48,14
+    EDITTEXT        IDC_APPLIED_VERSION,222,138,54,14,ES_AUTOHSCROLL
+    GROUPBOX        "Output Folder:",IDC_STATIC,210,168,210,54
+    EDITTEXT        IDC_OUTPUT_FOLDER,216,204,156,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse..",IDC_OUTPUT_BROWSE,378,204,38,14
+    LTEXT           "Files will go in a folder having the same name of the latest version. If the folder already exists it will be followd by [#].",
+                    IDC_STATIC,216,180,198,18
+    GROUPBOX        "Build Patch:",IDC_STATIC,360,281,60,30
+    PUSHBUTTON      "Build",IDC_BUTTON_BUILD,366,293,48,12
+    GROUPBOX        "Jump Patch",IDC_STATIC,7,228,414,46
+    GROUPBOX        "Installer Directory:",IDC_STATIC,14,239,256,31
+    EDITTEXT        IDC_INSTALLER_DIRECTORY,20,249,199,14,ES_AUTOHSCROLL
+    GROUPBOX        "Installer Version:",IDC_STATIC,276,238,71,31
+    EDITTEXT        IDC_INSTALLER_VERSION,282,249,59,15,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse..",IDC_INSTALLER_DIRECTORY_BROWSE,225,249,38,14
+    GROUPBOX        "Build Jump:",IDC_STATIC,353,239,60,30
+    PUSHBUTTON      "Build",IDC_BUTTON_BUILD_JUMP,359,250,48,12
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 2,0,0,5
+ PRODUCTVERSION 3,0,0,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904e4"
+        BEGIN
+            VALUE "Comments", "Created by LiquidEnforcer for ProjectVisitor"
+            VALUE "CompanyName", "Conundrum Studios"
+            VALUE "FileDescription", "Project Visitor Patch Creator"
+            VALUE "FileVersion", "2.0.0.5"
+            VALUE "InternalName", "PatchBuilder.exe"
+            VALUE "LegalCopyright", "(c) ProjectVisitor.  All rights reserved."
+            VALUE "OriginalFilename", "PatchBuilder.exe"
+            VALUE "ProductName", "PV Patch Builder"
+            VALUE "ProductVersion", "3.0.0.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_PATCHBUILDER_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 421
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 311
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// RT_MANIFEST
+//
+
+IDR_MANIFEST            RT_MANIFEST             "res\\PatchBuilder.manifest"
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#include "res\PatchBuilder.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
