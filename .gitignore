@@ -151,3 +151,5 @@ $RECYCLE.BIN/
 .DS_Store
 Assets/
 VS */
+_DEBUG/
+_RELEASE/
