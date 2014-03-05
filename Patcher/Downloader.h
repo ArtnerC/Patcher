@@ -10,7 +10,7 @@ class CPatcherDlg;
 class CDownloader
 {
 public:
-	CDownloader(CPatcherDlg* wnd, CString url, CString root = "");
+	CDownloader(CPatcherDlg* wnd, CString url, CString root = L"");
 	~CDownloader();
 
 	bool Connect();

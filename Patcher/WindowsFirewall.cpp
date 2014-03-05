@@ -22,7 +22,7 @@ CWindowsFirewall::CWindowsFirewall() : m_comInit(NULL), m_fwProfile(NULL)
 		hr = m_comInit;
 		if(FAILED(hr))
 		{
-			CLog::Instance()->AddLog("CoInitializeEx failed: 0x%08lx\n", hr);
+			CLog::Instance()->AddLog(L"CoInitializeEx failed: 0x%08lx\n", hr);
 			throw;
 		}
 	}
@@ -32,7 +32,7 @@ CWindowsFirewall::CWindowsFirewall() : m_comInit(NULL), m_fwProfile(NULL)
 	//hr = WindowsFirewallInitialize();
 	if(FAILED(hr))
 	{
-		CLog::Instance()->AddLog("WindowsFirewallInitialize failed: 0x%08lx\n", hr);
+		CLog::Instance()->AddLog(L"WindowsFirewallInitialize failed: 0x%08lx\n", hr);
 		throw;
 	}
 }
@@ -66,7 +66,7 @@ bool CWindowsFirewall::IsOn()
 bool CWindowsFirewall::IsAppEnabled(CString path)
 {
 	BOOL fwAppEnabled;
-	HRESULT hr = WindowsFirewallAppIsEnabled(path.GetString(), &fwAppEnabled);
+	HRESULT hr = WindowsFirewallAppIsEnabled(path, &fwAppEnabled);
 	if(FAILED(hr))
 		throw "Check Failed";
 
@@ -79,10 +79,10 @@ bool CWindowsFirewall::IsAppEnabled(CString path)
 void CWindowsFirewall::AddApp(CString path, CString name)
 {
 	//Add application to the authorized application collection.
-	HRESULT hr = WindowsFirewallAddApp(path.GetString(), name.GetString());
+	HRESULT hr = WindowsFirewallAddApp(path, name);
 	if(FAILED(hr))
 	{
-		CLog::Instance()->AddLog("WindowsFirewallAddApp failed: 0x08lx\n", hr);
+		CLog::Instance()->AddLog(L"WindowsFirewallAddApp failed: 0x08lx\n", hr);
 		throw;
 	}
 }
@@ -99,7 +99,7 @@ HRESULT CWindowsFirewall::WindowsFirewallInit()
 	hr = CoCreateInstance(__uuidof(NetFwMgr), NULL, CLSCTX_INPROC_SERVER, __uuidof(INetFwMgr), (void**)&fwMgr);
 	if(FAILED(hr))
 	{
-		CLog::Instance()->AddLog("CoCreateInstance failed: 0x%08lx\n", hr);
+		CLog::Instance()->AddLog(L"CoCreateInstance failed: 0x%08lx\n", hr);
 		throw;
 	}
 
@@ -107,7 +107,7 @@ HRESULT CWindowsFirewall::WindowsFirewallInit()
 	hr = fwMgr->get_LocalPolicy(&fwPolicy);
 	if(FAILED(hr))
 	{
-		CLog::Instance()->AddLog("get_LocalPolicy failed: 0x%08lx\n", hr);
+		CLog::Instance()->AddLog(L"get_LocalPolicy failed: 0x%08lx\n", hr);
 		throw;
 	}
 
@@ -115,7 +115,7 @@ HRESULT CWindowsFirewall::WindowsFirewallInit()
 	hr = fwPolicy->get_CurrentProfile(&m_fwProfile);
 	if(FAILED(hr))
 	{
-		CLog::Instance()->AddLog("get_CurrentProfile failed: 0x08lx\n", hr);
+		CLog::Instance()->AddLog(L"get_CurrentProfile failed: 0x08lx\n", hr);
 		throw;
 	}
 		
@@ -153,7 +153,7 @@ HRESULT CWindowsFirewall::WindowsFirewallIsOn(BOOL *fwOn)
 	hr = m_fwProfile->get_FirewallEnabled(&fwEnabled);
 	if(FAILED(hr))
 	{
-		CLog::Instance()->AddLog("get_FirewallEnabled failed: 0x08lx\n", hr);
+		CLog::Instance()->AddLog(L"get_FirewallEnabled failed: 0x08lx\n", hr);
 		throw;
 	}
 
@@ -166,7 +166,7 @@ HRESULT CWindowsFirewall::WindowsFirewallIsOn(BOOL *fwOn)
 	return hr;
 }
 
-HRESULT CWindowsFirewall::WindowsFirewallAppIsEnabled(const char * fwProcessImageFileName, BOOL *fwAppEnabled)
+HRESULT CWindowsFirewall::WindowsFirewallAppIsEnabled(const CString fwProcessImageFileName, BOOL *fwAppEnabled)
 {
 	HRESULT hr = S_OK;
 	BSTR fwBstrProcessImageFileName = NULL;
@@ -174,7 +174,7 @@ HRESULT CWindowsFirewall::WindowsFirewallAppIsEnabled(const char * fwProcessImag
 	INetFwAuthorizedApplication* fwApp = NULL;
 	INetFwAuthorizedApplications* fwApps = NULL;
 
-	_ASSERT(fwProcessImageFileName != NULL);
+	_ASSERT(fwProcessImageFileName != L"");
 	_ASSERT(fwAppEnabled != NULL);
 
 	*fwAppEnabled = FALSE;
@@ -184,7 +184,7 @@ HRESULT CWindowsFirewall::WindowsFirewallAppIsEnabled(const char * fwProcessImag
 
 	if(FAILED(hr))
 	{
-		CLog::Instance()->AddLog("get_AuthorizedApplications failed: 0x%08lx\n", hr);
+		CLog::Instance()->AddLog(L"get_AuthorizedApplications failed: 0x%08lx\n", hr);
 		throw;
 	}
 
@@ -194,7 +194,7 @@ HRESULT CWindowsFirewall::WindowsFirewallAppIsEnabled(const char * fwProcessImag
 	if(fwBstrProcessImageFileName == NULL)
 	{
 		hr = E_OUTOFMEMORY;
-		CLog::Instance()->AddLog("SysAllocString failed: 0x%08lx\n", hr);
+		CLog::Instance()->AddLog(L"SysAllocString failed: 0x%08lx\n", hr);
 		throw;
 	}
 
@@ -208,7 +208,7 @@ HRESULT CWindowsFirewall::WindowsFirewallAppIsEnabled(const char * fwProcessImag
 		hr = fwApp->get_Enabled(&fwEnabled);
 		if(FAILED(hr))
 		{
-			CLog::Instance()->AddLog("get_Enabled failed: 0x%08lx\n", hr);
+			CLog::Instance()->AddLog(L"get_Enabled failed: 0x%08lx\n", hr);
 			throw;
 		}
 
@@ -238,7 +238,7 @@ HRESULT CWindowsFirewall::WindowsFirewallAppIsEnabled(const char * fwProcessImag
 	return hr;
 }
 
-HRESULT CWindowsFirewall::WindowsFirewallAddApp(const char * fwProcessImageFileName, const char * fwName)
+HRESULT CWindowsFirewall::WindowsFirewallAddApp(const CString fwProcessImageFileName, const CString fwName)
 {
 	HRESULT hr = S_OK;
 	BOOL fwAppEnabled;
@@ -247,14 +247,14 @@ HRESULT CWindowsFirewall::WindowsFirewallAddApp(const char * fwProcessImageFileN
 	INetFwAuthorizedApplication* fwApp = NULL;
 	INetFwAuthorizedApplications* fwApps = NULL;
 
-	_ASSERT(fwProcessImageFileName != NULL);
-	_ASSERT(fwName != NULL);
+	_ASSERT(fwProcessImageFileName != L"");
+	_ASSERT(fwName != L"");
 
 	//First check to see if the application is already authorized.
 	hr = WindowsFirewallAppIsEnabled(fwProcessImageFileName, &fwAppEnabled);
 	if(FAILED(hr))
 	{
-		CLog::Instance()->AddLog("WindowsFirewallAppIsEnabled failed: 0x%08lx\n", hr);
+		CLog::Instance()->AddLog(L"WindowsFirewallAppIsEnabled failed: 0x%08lx\n", hr);
 		throw;
 	}
 
@@ -265,7 +265,7 @@ HRESULT CWindowsFirewall::WindowsFirewallAddApp(const char * fwProcessImageFileN
 		hr = m_fwProfile->get_AuthorizedApplications(&fwApps);
 		if(FAILED(hr))
 		{
-			CLog::Instance()->AddLog("get_AuthorizedApplications failed: 0x%08lx\n", hr);
+			CLog::Instance()->AddLog(L"get_AuthorizedApplications failed: 0x%08lx\n", hr);
 			throw;
 		}
 
@@ -273,7 +273,7 @@ HRESULT CWindowsFirewall::WindowsFirewallAddApp(const char * fwProcessImageFileN
 		hr = CoCreateInstance(__uuidof(NetFwAuthorizedApplication), NULL, CLSCTX_INPROC_SERVER, __uuidof(INetFwAuthorizedApplication), (void**)&fwApp);
 		if(FAILED(hr))
 		{
-			CLog::Instance()->AddLog("CoCreateInstance failed: 0x%08lx\n", hr);
+			CLog::Instance()->AddLog(L"CoCreateInstance failed: 0x%08lx\n", hr);
 			throw;
 		}
 
@@ -282,7 +282,7 @@ HRESULT CWindowsFirewall::WindowsFirewallAddApp(const char * fwProcessImageFileN
 		if(fwBstrProcessImageFileName == NULL)
 		{
 			hr = E_OUTOFMEMORY;
-			CLog::Instance()->AddLog("SysAllocString failed: 0x%08lx\n", hr);
+			CLog::Instance()->AddLog(L"SysAllocString failed: 0x%08lx\n", hr);
 			throw;
 		}
 
@@ -290,7 +290,7 @@ HRESULT CWindowsFirewall::WindowsFirewallAddApp(const char * fwProcessImageFileN
 		hr = fwApp->put_ProcessImageFileName(fwBstrProcessImageFileName);
 		if(FAILED(hr))
 		{
-			CLog::Instance()->AddLog("put_ProcessImageFileName failed: 0x%08lx\n", hr);
+			CLog::Instance()->AddLog(L"put_ProcessImageFileName failed: 0x%08lx\n", hr);
 			throw;
 		}
 
@@ -299,14 +299,14 @@ HRESULT CWindowsFirewall::WindowsFirewallAddApp(const char * fwProcessImageFileN
 		if(SysStringLen(fwBstrName) == 0)
 		{
 			hr = E_OUTOFMEMORY;
-			CLog::Instance()->AddLog("SysAllocString failed: 0x%08lx\n", hr);
+			CLog::Instance()->AddLog(L"SysAllocString failed: 0x%08lx\n", hr);
 		}
 
 		//Set the application friendly name.
 		hr = fwApp->put_Name(fwBstrName);
 		if(FAILED(hr))
 		{
-			CLog::Instance()->AddLog("put_Name failed: 0x%08lx\n", hr);
+			CLog::Instance()->AddLog(L"put_Name failed: 0x%08lx\n", hr);
 			throw;
 		}
 
@@ -314,7 +314,7 @@ HRESULT CWindowsFirewall::WindowsFirewallAddApp(const char * fwProcessImageFileN
 		hr = fwApps->Add(fwApp);
 		if(FAILED(hr))
 		{
-			CLog::Instance()->AddLog("Add failed: 0x%08lx\n", hr);
+			CLog::Instance()->AddLog(L"Add failed: 0x%08lx\n", hr);
 			throw;
 		}
 

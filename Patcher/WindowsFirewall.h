@@ -31,8 +31,8 @@ public:
 	HRESULT WindowsFirewallInit();
 	void WindowsFirewallCleanup();
 	HRESULT WindowsFirewallIsOn(OUT BOOL* fwOn);
-	HRESULT WindowsFirewallAppIsEnabled(const char * fwProcessImageFileName, OUT BOOL* fwAppEnabled);
-	HRESULT WindowsFirewallAddApp(const char * fwProcessImageFileName, const char * fwName);
+	HRESULT WindowsFirewallAppIsEnabled(const CString fwProcessImageFileName, OUT BOOL* fwAppEnabled);
+	HRESULT WindowsFirewallAddApp(const CString fwProcessImageFileName, const CString fwName);
 
 private:
 	//Firewall Profile

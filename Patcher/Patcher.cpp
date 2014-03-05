@@ -37,31 +37,31 @@ Begins patching process
 ******************************************************************************/
 bool CPatcher::BeginProcess()
 {
-	m_wnd->SetAction("Initializing...");
+	m_wnd->SetAction(L"Initializing...");
 
 	//Check for a setup file and process (before connect)
 	CFile sFile;
-	if(sFile.Open("setup.txt", CFile::modeRead))
+	if(sFile.Open(L"setup.txt", CFile::modeRead))
 	{
 		Sleep(1000);
-		m_wnd->SetAction("Running Setup...");
+		m_wnd->SetAction(L"Running Setup...");
 		cmdFile.Empty();
 		cmdFile.Preallocate((long int)sFile.GetLength());
-		char sBuffer[1024];
+		wchar_t sBuffer[1024];
 		int rlen = 0;
 		while((rlen = sFile.Read(sBuffer, 1024)) > 0)
 			cmdFile.Append(sBuffer, rlen);
 
 		sFile.Close();
-		CFileHelper::Delete("setup.txt");
+		CFileHelper::Delete(L"setup.txt");
 
 		ProcessFile(cmdFile);
 	}
 
 	//Starts getting patches and processing
-	m_wnd->SetAction("Patching Files...");
+	m_wnd->SetAction(L"Patching " + CConfig::PRODUCT_NAME + L"...");
 	bool bReturn = true;
-	while((m_Settings->GetInt("LocalVersion", true) < m_Settings->GetInt("RemoteVersion")) && m_Settings->GetInt("LocalVersion", true) && m_Settings->GetInt("RemoteVersion"))
+	while((m_Settings->GetInt(L"LocalVersion", true) < m_Settings->GetInt(L"RemoteVersion")) && m_Settings->GetInt(L"LocalVersion", true) && m_Settings->GetInt(L"RemoteVersion"))
 	{
 		//Return false to keep patcher open
 		bReturn = false;
@@ -71,12 +71,12 @@ bool CPatcher::BeginProcess()
 
 		//Setup our files location
 		CString patchLoc;
-		patchLoc.Format("commands/%d.txt", m_Settings->GetInt("LocalVersion", true));
+		patchLoc.Format(L"commands/%d.txt", m_Settings->GetInt(L"LocalVersion", true));
 
 		//Download and run command file
 		if(!m_Downloader->DownloadToMem(patchLoc, cmdFile))
 			//Download default patch command file
-			if(!m_Downloader->DownloadToMem("commands/default.txt", cmdFile))
+			if(!m_Downloader->DownloadToMem(L"commands/default.txt", cmdFile))
 				bSuccess = false;
 
 		if(bSuccess)
@@ -85,18 +85,18 @@ bool CPatcher::BeginProcess()
 		//Checks patch success
 		if(!bSuccess)
 		{
-			m_wnd->SetStatus("Patching Failed!");
-			CLog::Instance()->AddLog("(Process) Error with patch command file. LocalVersion: %d  RemoteVersion: %d", m_Settings->GetInt("LocalVersion", true), m_Settings->GetInt("RemoteVersion"));
+			m_wnd->SetStatus(L"Patching Failed!");
+			CLog::Instance()->AddLog(L"(Process) Error with patch command file. LocalVersion: %d  RemoteVersion: %d", m_Settings->GetInt(L"LocalVersion", true), m_Settings->GetInt(L"RemoteVersion"));
 			return false;
 		}
 	}
 
 	//Display that patching is complete
 	if(!bReturn)
-		m_wnd->SetAction("Patching Finished");
+		m_wnd->SetAction(L"Patching Finished");
 	else
-		m_wnd->SetAction("Ready to Launch!");
-	m_wnd->SetStatus("");
+		m_wnd->SetAction(L"Ready to Launch!");
+	m_wnd->SetStatus(L"");
 
 	return bReturn;
 }
@@ -129,30 +129,30 @@ Parse command and params from line
 void CPatcher::ParseCommand(CString lineCommand, CmdList &cmds)
 {	
 	//Remove Comment
-	int pos = lineCommand.Find("//");
+	int pos = lineCommand.Find(L"//");
 	if(pos != -1)
 		lineCommand.Delete(pos, lineCommand.GetLength() - pos);
 
 	//Get command
-	cmds.command.Format("%s", lineCommand);
-	pos = lineCommand.FindOneOf(" \t\r\n");
+	cmds.command.Format(L"%s", lineCommand);
+	pos = lineCommand.FindOneOf(L" \t\r\n");
 	if(pos != -1)
 	{
-		cmds.command.Format("%s", lineCommand.Left(pos));
+		cmds.command.Format(L"%s", lineCommand.Left(pos));
 		lineCommand.Delete(0, pos + 1);
 	}
 
 	//Get Param 1
-	cmds.pA.Format("%s", lineCommand);
-	pos = lineCommand.FindOneOf("|\t\r\n");
+	cmds.pA.Format(L"%s", lineCommand);
+	pos = lineCommand.FindOneOf(L"|\t\r\n");
 	if(pos != -1)
 	{
-		cmds.pA.Format("%s", lineCommand.Left(pos));
+		cmds.pA.Format(L"%s", lineCommand.Left(pos));
 		lineCommand.Delete(0, pos + 1);
 	}
 
 	//Get Param 2
-	cmds.pB.Format("%s", lineCommand);
+	cmds.pB.Format(L"%s", lineCommand);
 
 	//Strip trailing and leading spaces
 	cmds.command.Trim();
@@ -178,12 +178,12 @@ void CPatcher::ProcessCommand(CString lineCommand, bool &patchSuccess)
 
 	//Processes single file patching
 	//patchfile [Path of Patch on Server]|[Local Computer Path]
-	if(!strcmp(cmds.command, "patchfile"))
+	if (!cmds.command.CompareNoCase(L"patchfile"))
 	{
 		//CString tempPatch, tempBackup;
 		CString fPatch, fBackup;
-		fPatch.Format("%s", cmds.pA);
-		fBackup.Format("%s", cmds.pB);
+		fPatch.Format(L"%s", cmds.pA);
+		fBackup.Format(L"%s", cmds.pB);
 
 		//Replace \ with /
 		fBackup.Replace('\\', '/');
@@ -191,15 +191,15 @@ void CPatcher::ProcessCommand(CString lineCommand, bool &patchSuccess)
 		//Get file name from path
 		int cPos = cmds.pA.ReverseFind('/');
 		if(cPos >= 0)
-			fPatch.Format("%s", cmds.pA.Right(cmds.pA.GetLength() - cPos - 1));
+			fPatch.Format(L"%s", cmds.pA.Right(cmds.pA.GetLength() - cPos - 1));
 
 		CString PatchDest, FilePath, BackupURL, PatchURL;
-		PatchDest.Format(	"%s%s",			updaterDir,	fPatch);
-		FilePath.Format(	"%s%s",			rootDir,	cmds.pB);
-		BackupURL.Format(	"install/%s",	fBackup);
-		PatchURL.Format(	"patches/%s",	cmds.pA);
+		PatchDest.Format(	L"%s%s",			updaterDir,	fPatch);
+		FilePath.Format(	L"%s%s",			rootDir,	cmds.pB);
+		BackupURL.Format(	L"install/%s",	fBackup);
+		PatchURL.Format(	L"patches/%s",	cmds.pA);
 
-		m_wnd->SetStatus("Patching: %s", fPatch);
+		m_wnd->SetStatus(L"Patching: %s", fPatch);
 
 		//Checks to see if the entire file has already been downloaded
 		bool fileClean = false;
@@ -228,9 +228,9 @@ void CPatcher::ProcessCommand(CString lineCommand, bool &patchSuccess)
 				m_wnd->SetProgress3(0);
 
 				//Add log entry with error info
-				CLog::Instance()->AddLog("(ProcessCommand) ApplyPatchFile Error: 0x%x File: %s LocalVersion: %d", GetLastError(), cmds.pB, m_Settings->GetInt("LocalVersion", true));
+				CLog::Instance()->AddLog(L"(ProcessCommand) ApplyPatchFile Error: 0x%x File: %s LocalVersion: %d", GetLastError(), cmds.pB, m_Settings->GetInt(L"LocalVersion", true));
 
-				m_wnd->SetStatus("Repairing: %s", cmds.pB);
+				m_wnd->SetStatus(L"Repairing: %s", cmds.pB);
 
 				//Download full file to disk if patching fails
 				if(m_Downloader->DownloadToFile(BackupURL, FilePath))
@@ -257,21 +257,21 @@ void CPatcher::ProcessCommand(CString lineCommand, bool &patchSuccess)
 
 	//Sets version if all patching was successful
 	//setverif [Version Number]
-	if((!strcmp(cmds.command, "setverif")) && patchSuccess)
+	if (!cmds.command.CompareNoCase(L"setverif") && patchSuccess)
 	{
-		m_Settings->SetStr("LocalVersion", cmds.pA, true);
-		m_wnd->SetVersion(m_Settings->GetInt("RemoteVersion"), m_Settings->GetInt("LocalVersion", true));
+		m_Settings->SetStr(L"LocalVersion", cmds.pA, true);
+		m_wnd->SetVersion(m_Settings->GetInt(L"RemoteVersion"), m_Settings->GetInt(L"LocalVersion", true));
 		return;
 	}
 
 	//Downloads and adds a whole new file
 	//addfile [Path on Server]|[Path on Computer]
-	if(!strcmp(cmds.command, "addfile"))
+	if (!cmds.command.CompareNoCase(L"addfile"))
 	{
 		CString FileURL;
-		FileURL.Format("patches/%s", cmds.pA);
+		FileURL.Format(L"patches/%s", cmds.pA);
 		CString FileDest;
-		FileDest.Format("%s%s", rootDir, cmds.pB);
+		FileDest.Format(L"%s%s", rootDir, cmds.pB);
 
 		//Checks to see if the entire file has already been downloaded
 		bool fileClean = false;
@@ -299,11 +299,11 @@ void CPatcher::ProcessCommand(CString lineCommand, bool &patchSuccess)
 
 	//Deletes a specified file
 	//delfile [Local Path to File]
-	if(!strcmp(cmds.command, "delfile"))
+	if (!cmds.command.CompareNoCase(L"delfile"))
 	{
 		//Create full path
 		CString FileDest;
-		FileDest.Format("%s%s", rootDir, cmds.pA);
+		FileDest.Format(L"%s%s", rootDir, cmds.pA);
 
 		//Delete file
 		CFileHelper::Delete(FileDest);
@@ -322,7 +322,7 @@ void CPatcher::ProcessCommand(CString lineCommand, bool &patchSuccess)
 
 	//Sets a registry value
 	//regedit [Key]|[Value]
-	if(!strcmp(cmds.command, "regedit"))
+	if (!cmds.command.CompareNoCase(L"regedit"))
 	{
 		m_Settings->SetStr(cmds.pA, cmds.pB, true);
 		return;
@@ -330,30 +330,30 @@ void CPatcher::ProcessCommand(CString lineCommand, bool &patchSuccess)
 
 	//Sets version no matter what
 	//setversion [Version Number]
-	if(!strcmp(cmds.command, "setversion"))
+	if (!cmds.command.CompareNoCase(L"setversion"))
 	{
-		m_Settings->SetStr("LocalVersion", cmds.pA, true);
-		m_wnd->SetVersion(m_Settings->GetInt("RemoteVersion"), m_Settings->GetInt("LocalVersion", true));
+		m_Settings->SetStr(L"LocalVersion", cmds.pA, true);
+		m_wnd->SetVersion(m_Settings->GetInt(L"RemoteVersion"), m_Settings->GetInt(L"LocalVersion", true));
 		return;
 	}
 
 	//Sets remote version
 	//remoteversion [Version Number]
-	if(!strcmp(cmds.command, "remoteversion"))
+	if (!cmds.command.CompareNoCase(L"remoteversion"))
 	{		
-		m_Settings->SetStr("RemoteVersion", cmds.pA);
-		m_wnd->SetVersion(m_Settings->GetInt("RemoteVersion"), m_Settings->GetInt("LocalVersion", true));
+		m_Settings->SetStr(L"RemoteVersion", cmds.pA);
+		m_wnd->SetVersion(m_Settings->GetInt(L"RemoteVersion"), m_Settings->GetInt(L"LocalVersion", true));
 		return;
 	}
 
 	//Adds file/checksum to udFiles
 	//uddfile [File Name]|[MD5 Checksum of File]
-	if(!strcmp(cmds.command, "uddfile"))
+	if (!cmds.command.CompareNoCase(L"uddfile"))
 	{
 		CFileHelper::CFileObj temp;
-		temp.FileName.Format("%s", cmds.pA);
-		temp.Checksum.Format("%s", cmds.pB);
-		temp.FilePath.Format("%s%s", updaterDir, temp.FileName);
+		temp.FileName.Format(L"%s", cmds.pA);
+		temp.Checksum.Format(L"%s", cmds.pB);
+		temp.FilePath.Format(L"%s%s", updaterDir, temp.FileName);
 		temp.FileExt = CFileHelper::GetExt(temp.FileName);
 		temp.RootDir = updaterDir;
 		udFiles.Add(temp);
@@ -363,10 +363,10 @@ void CPatcher::ProcessCommand(CString lineCommand, bool &patchSuccess)
 	//Displays a message to the user
 	//msgbox [Message]
 	//msgbox [Title]|[Message]
-	if(!strcmp(cmds.command, "msgbox"))
+	if (!cmds.command.CompareNoCase(L"msgbox"))
 	{
 		if((cmds.pB.GetLength() <= 0) || (!cmds.pB.Compare(cmds.pA)))
-			theApp.m_pMainWnd->MessageBox(cmds.pA, "Update Information!");
+			theApp.m_pMainWnd->MessageBox(cmds.pA, L"Update Information!");
 		else
 			theApp.m_pMainWnd->MessageBox(cmds.pB, cmds.pA);
 		return;
@@ -374,15 +374,15 @@ void CPatcher::ProcessCommand(CString lineCommand, bool &patchSuccess)
 
 	//Adds line to log file
 	//CLog::Instance()->AddLog [Log Entry]
-	if(!strcmp(cmds.command, "AddLog"))
+	if (!cmds.command.CompareNoCase(L"AddLog"))
 	{
-		CLog::Instance()->AddLog("%s", cmds.pA);
+		CLog::Instance()->AddLog(L"%s", cmds.pA);
 		return;
 	}
 
 	//Downloads and displays patch info
 	//patchinfo PatchInfo.rtf
-	if(!strcmp(cmds.command, "patchinfo"))
+	if (!cmds.command.CompareNoCase(L"patchinfo"))
 	{
 		//m_wnd->SetBrowser(updaterDir + "\Notes.htm");
 		return;
@@ -390,7 +390,7 @@ void CPatcher::ProcessCommand(CString lineCommand, bool &patchSuccess)
 
 	//Download and run patch command file
 	//cmdfile commands/[file].txt
-	if(!strcmp(cmds.command, "cmdfile"))
+	if (!cmds.command.CompareNoCase(L"cmdfile"))
 	{
 		CString cmdFileB;
 		if(m_Downloader->DownloadToMem(cmds.pA, cmdFileB))
@@ -401,20 +401,20 @@ void CPatcher::ProcessCommand(CString lineCommand, bool &patchSuccess)
 
 	//Check updater directory for consistency
 	//checkupdatedir
-	if(!strcmp(cmds.command, "checkupdatedir"))
+	if (!cmds.command.CompareNoCase(L"checkupdatedir"))
 	{
-		if(m_Settings->GetStr("runState", true).CompareNoCase("NOCHECK") && (udFiles.GetSize() > 1))
+		if(m_Settings->GetStr(L"runState", true).CompareNoCase(L"NOCHECK") && (udFiles.GetSize() > 1))
 			if(!CheckUpdateDir())
 				patchSuccess = false;
 		return;
 	}
 
-	if(!strcmp(cmds.command, "launchapp"))
+	if (!cmds.command.CompareNoCase(L"launchapp"))
 	{
 		theApp.LaunchApp();
 	}
 
-	CLog::Instance()->AddLog("(ProcessCommand) Un-Supported Command: \"%s\"", lineCommand);
+	CLog::Instance()->AddLog(L"(ProcessCommand) Unsupported Command: \"%s\"", lineCommand);
 
 	return;
 }
@@ -442,7 +442,7 @@ bool CPatcher::ProcessFile(CString cmdFile)
 	while((pos < cmdFile.GetLength()) && patchSuccess)
 	{
 		//Process the line
-		ProcessCommand(cmdFile.Tokenize("\n", pos), patchSuccess);
+		ProcessCommand(cmdFile.Tokenize(L"\n", pos), patchSuccess);
 
 		//Set Lines
 		fCmds = numCmds;
@@ -473,17 +473,17 @@ bool CPatcher::ProcessFile(CFile& commandFile)
 		line.Empty();
 	}
 
+	bool patchSuccess = true;
 	POSITION pos = CommandList.GetHeadPosition();
 	while(pos)
 	{
-		CommandList.GetNext(pos)->Execute();
+		if (!CommandList.GetNext(pos)->Execute())
+		{
+			patchSuccess = false;
+		}
 	}
-	
-	//Runs commands line by line
-	int position = 0;
-	bool patchSuccess = true;
-	
 
+	return patchSuccess;
 }
 
 bool CPatcher::GetLine(CFile& commandFile, CString& line)
@@ -505,16 +505,16 @@ bool CPatcher::GetLine(CFile& commandFile, CString& line)
 void CPatcher::ParseLine(CString& line, CString& command, ArgList* args)
 {
 	int pos = 0;
-	command = line.Tokenize(" \t\r\n", pos);
+	command = line.Tokenize(L" \t\r\n", pos);
 	
-	CString arg = line.Tokenize("|\t\r\n", pos);
+	CString arg = line.Tokenize(L"|\t\r\n", pos);
 	for(int i = 1; pos != -1; i++)
 	{
 		CString name;
-		name.Format("arg%d", i);
+		name.Format(L"arg%d", i);
 		args->SetAt(name, arg);
 		
-		arg = line.Tokenize("|\t\r\n", pos);
+		arg = line.Tokenize(L"|\t\r\n", pos);
 	}
 }
 
@@ -543,7 +543,7 @@ int CPatcher::CmdFileLines(CString cmd)
 	while(pos < cmd.GetLength())
 	{
 		CmdList cmds;
-		ParseCommand(cmd.Tokenize("\n", pos), cmds);
+		ParseCommand(cmd.Tokenize(L"\n", pos), cmds);
 		if(!cmds.command.IsEmpty())
 			count++;
 	}
@@ -556,13 +556,13 @@ int CPatcher::CmdFileLines(CString cmd)
 bool CPatcher::cmdPatchFile(ArgList *args)
 {
 	CString arg1, arg2;
-	if(!args->Lookup("arg1", arg1) || !args->Lookup("arg2", arg2))
+	if(!args->Lookup(L"arg1", arg1) || !args->Lookup(L"arg2", arg2))
 		return false;
 
 	//CString tempPatch, tempBackup;
 	CString fPatch, fBackup;
-	fPatch.Format("%s", arg1);
-	fBackup.Format("%s", arg2);
+	fPatch.Format(L"%s", arg1);
+	fBackup.Format(L"%s", arg2);
 
 	//Replace \ with /
 	fBackup.Replace('\\', '/');
@@ -570,15 +570,15 @@ bool CPatcher::cmdPatchFile(ArgList *args)
 	//Get file name from path
 	int cPos = arg1.ReverseFind('/');
 	if(cPos >= 0)
-		fPatch.Format("%s", arg1.Right(arg1.GetLength() - cPos - 1));
+		fPatch.Format(L"%s", arg1.Right(arg1.GetLength() - cPos - 1));
 
 	CString PatchDest, FilePath, BackupURL, PatchURL;
-	PatchDest.Format(	"%s%s",			updaterDir,	fPatch);
-	FilePath.Format(	"%s%s",			rootDir,	arg2);
-	BackupURL.Format(	"install/%s",	fBackup);
-	PatchURL.Format(	"patches/%s",	arg1);
+	PatchDest.Format(	L"%s%s",			updaterDir,	fPatch);
+	FilePath.Format(	L"%s%s",			rootDir,	arg2);
+	BackupURL.Format(	L"install/%s",	fBackup);
+	PatchURL.Format(	L"patches/%s",	arg1);
 
-	m_wnd->SetStatus("Patching: %s", fPatch);
+	m_wnd->SetStatus(L"Patching: %s", fPatch);
 
 	//Checks to see if the entire file has already been downloaded
 	bool fileClean = false;
@@ -607,9 +607,9 @@ bool CPatcher::cmdPatchFile(ArgList *args)
 			m_wnd->SetProgress3(0);
 
 			//Add log entry with error info
-			CLog::Instance()->AddLog("(ProcessCommand) ApplyPatchFile Error: 0x%x File: %s LocalVersion: %d", GetLastError(), arg2, m_Settings->GetInt("LocalVersion", true));
+			CLog::Instance()->AddLog(L"(ProcessCommand) ApplyPatchFile Error: 0x%x File: %s LocalVersion: %d", GetLastError(), arg2, m_Settings->GetInt(L"LocalVersion", true));
 
-			m_wnd->SetStatus("Repairing: %s", arg2);
+			m_wnd->SetStatus(L"Repairing: %s", arg2);
 
 			//Download full file to disk if patching fails
 			if(m_Downloader->DownloadToFile(BackupURL, FilePath))
@@ -641,13 +641,13 @@ bool CPatcher::cmdPatchFile(ArgList *args)
 bool CPatcher::cmdSetVerIf(ArgList *args)
 {
 	CString arg1;
-	if(!args->Lookup("arg1", arg1))
+	if(!args->Lookup(L"arg1", arg1))
 		return false;
 
 	if(m_PatchSucceeded)
 	{
-		m_Settings->SetStr("LocalVersion", arg1, true);
-		m_wnd->SetVersion(m_Settings->GetInt("RemoteVersion"), m_Settings->GetInt("LocalVersion", true));
+		m_Settings->SetStr(L"LocalVersion", arg1, true);
+		m_wnd->SetVersion(m_Settings->GetInt(L"RemoteVersion"), m_Settings->GetInt(L"LocalVersion", true));
 		return true;
 	}
 	
@@ -659,13 +659,13 @@ bool CPatcher::cmdSetVerIf(ArgList *args)
 bool CPatcher::cmdAddFile(ArgList *args)
 {
 	CString arg1, arg2;
-	if(!args->Lookup("arg1", arg1) || !args->Lookup("arg2", arg2))
+	if(!args->Lookup(L"arg1", arg1) || !args->Lookup(L"arg2", arg2))
 		return false;
 
 	CString FileURL;
-	FileURL.Format("patches/%s", arg1);
+	FileURL.Format(L"patches/%s", arg1);
 	CString FileDest;
-	FileDest.Format("%s%s", rootDir, arg2);
+	FileDest.Format(L"%s%s", rootDir, arg2);
 
 	//Checks to see if the entire file has already been downloaded
 	bool fileClean = false;
@@ -696,12 +696,12 @@ bool CPatcher::cmdAddFile(ArgList *args)
 bool CPatcher::cmdDelFile(ArgList *args)
 {
 	CString arg1;
-	if(!args->Lookup("arg1", arg1))
+	if(!args->Lookup(L"arg1", arg1))
 		return false;
 
 	//Create full path
 	CString FileDest;
-	FileDest.Format("%s%s", rootDir, arg1);
+	FileDest.Format(L"%s%s", rootDir, arg1);
 
 	//Delete file
 	CFileHelper::Delete(FileDest);
@@ -723,7 +723,7 @@ bool CPatcher::cmdDelFile(ArgList *args)
 bool CPatcher::cmdRegEdit(ArgList *args)
 {
 	CString arg1, arg2;
-	if(!args->Lookup("arg1", arg1) || !args->Lookup("arg2", arg2))
+	if(!args->Lookup(L"arg1", arg1) || !args->Lookup(L"arg2", arg2))
 		return false;
 
 	m_Settings->SetStr(arg1, arg2, true);
@@ -736,11 +736,11 @@ bool CPatcher::cmdRegEdit(ArgList *args)
 bool CPatcher::cmdSetVersion(ArgList *args)
 {
 	CString arg1;
-	if(!args->Lookup("arg1", arg1))
+	if(!args->Lookup(L"arg1", arg1))
 		return false;
 
-	m_Settings->SetStr("LocalVersion", arg1, true);
-	m_wnd->SetVersion(m_Settings->GetInt("RemoteVersion"), m_Settings->GetInt("LocalVersion", true));
+	m_Settings->SetStr(L"LocalVersion", arg1, true);
+	m_wnd->SetVersion(m_Settings->GetInt(L"RemoteVersion"), m_Settings->GetInt(L"LocalVersion", true));
 
 	return true;
 }
@@ -750,11 +750,11 @@ bool CPatcher::cmdSetVersion(ArgList *args)
 bool CPatcher::cmdRemoteVersion(ArgList *args)
 {
 	CString arg1;
-	if(!args->Lookup("arg1", arg1))
+	if(!args->Lookup(L"arg1", arg1))
 		return false;
 
-	m_Settings->SetStr("RemoteVersion", arg1);
-	m_wnd->SetVersion(m_Settings->GetInt("RemoteVersion"), m_Settings->GetInt("LocalVersion", true));
+	m_Settings->SetStr(L"RemoteVersion", arg1);
+	m_wnd->SetVersion(m_Settings->GetInt(L"RemoteVersion"), m_Settings->GetInt(L"LocalVersion", true));
 
 	return true;
 }
@@ -764,13 +764,13 @@ bool CPatcher::cmdRemoteVersion(ArgList *args)
 bool CPatcher::cmdUDDFile(ArgList *args)
 {
 	CString arg1, arg2;
-	if(!args->Lookup("arg1", arg1) || !args->Lookup("arg2", arg2))
+	if(!args->Lookup(L"arg1", arg1) || !args->Lookup(L"arg2", arg2))
 		return false;
 
 	CFileHelper::CFileObj temp;
-	temp.FileName.Format("%s", arg1);
-	temp.Checksum.Format("%s", arg2);
-	temp.FilePath.Format("%s%s", updaterDir, temp.FileName);
+	temp.FileName.Format(L"%s", arg1);
+	temp.Checksum.Format(L"%s", arg2);
+	temp.FilePath.Format(L"%s%s", updaterDir, temp.FileName);
 	temp.FileExt = CFileHelper::GetExt(temp.FileName);
 	temp.RootDir = updaterDir;
 	udFiles.Add(temp);
@@ -785,12 +785,12 @@ bool CPatcher::cmdMsgBox(ArgList *args)
 {
 	CString arg1, arg2;
 
-	if(args->Lookup("arg1", arg1))
+	if(args->Lookup(L"arg1", arg1))
 	{
-		if(args->Lookup("arg2", arg2))
+		if(args->Lookup(L"arg2", arg2))
 			theApp.m_pMainWnd->MessageBox(arg2, arg1);
 		else
-			theApp.m_pMainWnd->MessageBox(arg1, "Update Information!");
+			theApp.m_pMainWnd->MessageBox(arg1, L"Update Information!");
 	}
 	
 	return true;
@@ -801,10 +801,10 @@ bool CPatcher::cmdMsgBox(ArgList *args)
 bool CPatcher::cmdAddLog(ArgList *args)
 {
 	CString arg1;
-	if(!args->Lookup("arg1", arg1))
+	if(!args->Lookup(L"arg1", arg1))
 		return false;
 
-	CLog::Instance()->AddLog("%s", arg1);
+	CLog::Instance()->AddLog(L"%s", arg1);
 
 	return true;
 }
@@ -814,7 +814,7 @@ bool CPatcher::cmdAddLog(ArgList *args)
 bool CPatcher::cmdCmdFile(ArgList *args)
 {
 	CString arg1;
-	if(!args->Lookup("arg1", arg1))
+	if(!args->Lookup(L"arg1", arg1))
 		return false;
 
 	CString cmdFileB;
@@ -829,7 +829,7 @@ bool CPatcher::cmdCmdFile(ArgList *args)
 //checkupdatedir
 bool CPatcher::cmdCheckUpdateDir(ArgList *args)
 {	
-	if(m_Settings->GetStr("runState", true).CompareNoCase("NOCHECK") && (udFiles.GetSize() > 1))
+	if(m_Settings->GetStr(L"runState", true).CompareNoCase(L"NOCHECK") && (udFiles.GetSize() > 1))
 		if(!CheckUpdateDir())
 			return (m_PatchSucceeded = false);
 
@@ -847,11 +847,11 @@ bool CPatcher::cmdUnknown(ArgList *args)
 {
 	CString command, arg1, arg2;
 
-	args->Lookup("cmd", command);
-	args->Lookup("arg1", arg1);
-	args->Lookup("arg2", arg2);
+	args->Lookup(L"cmd", command);
+	args->Lookup(L"arg1", arg1);
+	args->Lookup(L"arg2", arg2);
 
-	CLog::Instance()->AddLog("(ProcessCommand) Un-Supported Command: \"%s\" Arg1: %s  Arg2: %s", command, arg1, arg2);
+	CLog::Instance()->AddLog(L"(ProcessCommand) Un-Supported Command: \"%s\" Arg1: %s  Arg2: %s", command, arg1, arg2);
 
 	return true;
 }
@@ -885,7 +885,7 @@ bool CPatcher::CheckUpdateDir()
 		case CFileHelper::CCmpObj::MODIFIED :
 			if(temp.FileObj.FileName != CString(CConfig::SECONDARY_UPDATER))
 			{
-				temp.FileObj.FilePath.Append(".temp");
+				temp.FileObj.FilePath.Append(L".temp");
 				bLaunch = true;
 			}
 			m_Downloader->DownloadToFile(temp.FileObj.FileName, temp.FileObj.FilePath);
@@ -906,7 +906,7 @@ bool CPatcher::CheckUpdateDir()
 		theApp.ParseCommandLine(cli);	
 
 		CString cmd;
-		cmd.Format("%s \"%s\"", CConfig::SECONDARY_UPDATER, cli.m_strFileName);
+		cmd.Format(L"%s \"%s\"", CConfig::SECONDARY_UPDATER, cli.m_strFileName);
 
 		int nLen = cmd.GetLength();
 		LPTSTR lpszBuf = cmd.GetBuffer(nLen);
