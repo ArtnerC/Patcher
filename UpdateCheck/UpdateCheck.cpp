@@ -37,11 +37,11 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 void Process()
 {
 	//Gets exe location and sets variables
-	char exeFileName[16385];
+	wchar_t exeFileName[16385];
 	GetModuleFileName(NULL, exeFileName, sizeof(exeFileName));
 	CString exePath, updaterDir;
-	
-	exePath.Format("%s", exeFileName);
+
+	exePath.Format(L"%s", exeFileName);
 	updaterDir = CFileHelper::GetParentDir(exePath);
 	
 	SetCurrentDirectory(updaterDir);
@@ -56,7 +56,7 @@ void Process()
 	{
 		CFileHelper::CFileObj temp = fileList.GetAt(i);
 
-		if(!temp.FileExt.CompareNoCase("temp") || !temp.FileExt.CompareNoCase("tmp"))
+		if(!temp.FileExt.CompareNoCase(L"temp") || !temp.FileExt.CompareNoCase(L"tmp"))
 		{
 			CString fTemp = temp.RootDir;
 			CFileHelper::AddSlash(fTemp);
@@ -72,12 +72,12 @@ void Process()
 	theApp.ParseCommandLine(cli);
 
 	CString cmd;
-	cmd.Format("%s /p \"%s\"", CConfig::PRIMARY_UPDATER, cli.m_strFileName);
+	cmd.Format(L"%s /p \"%s\"", CConfig::PRIMARY_UPDATER, cli.m_strFileName);
 
 	int nLen = cmd.GetLength();
 	LPTSTR lpszBuf = cmd.GetBuffer(nLen);
 
-	//Restart Patcher
+	//Restart Updater
 	STARTUPINFO sinfo = {0};
 	PROCESS_INFORMATION pinfo = {0};
 	sinfo.cb = sizeof(sinfo);
