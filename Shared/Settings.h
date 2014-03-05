@@ -8,7 +8,7 @@
 class CSettings
 {
 public:
-	CSettings(CString registrysubkey = "");
+	CSettings(CString registrysubkey = L"");
 	~CSettings();
 	CSettings(const CSettings &csettings);
 	void operator = (const CSettings &csettings);

@@ -492,10 +492,10 @@ CString CMD5Checksum::Final()
 			Str = CString("00");
 		}
 		else if (lpszMD5[i] <= 15) 	{
-			Str.Format("0%x",lpszMD5[i]);
+			Str.Format(L"0%x",lpszMD5[i]);
 		}
 		else {
-			Str.Format("%x",lpszMD5[i]);
+			Str.Format(L"%x",lpszMD5[i]);
 		}
 
 		ASSERT( Str.GetLength() == 2 );

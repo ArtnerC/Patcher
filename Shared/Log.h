@@ -9,8 +9,8 @@ public:
 	static CLog* Instance();
 	static void Dispose();
 
-	void AddLog(const char * fmt, ...);
-	void SetDirectory(const CString dir = "");
+	void AddLog(const CString fmt, ...);
+	void SetDirectory(const CString dir = L"");
 
 protected:
 

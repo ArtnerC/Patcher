@@ -48,7 +48,7 @@ void CSettings::SetStr(CString name, CString value, bool inregistry /* = false *
 void CSettings::SetInt(CString name, int value, bool inregistry /* = false */)
 {
 	CString temp;
-	temp.Format("%d", value);
+	temp.Format(L"%d", value);
 	SetStr(name, temp, inregistry);
 }
 
@@ -84,7 +84,8 @@ int CSettings::GetInt(CString name, bool inregistry /* = false */)
 {
 	CString temp;
 	temp = GetStr(name, inregistry);
-	return atoi(temp);
+	
+	return _wtoi(temp);
 }
 
 void CSettings::SetToRegistry(CString name, CString value)
@@ -96,14 +97,14 @@ void CSettings::SetToRegistry(CString name, CString value)
 	if(RegOpenKeyEx(HKEY_LOCAL_MACHINE, m_RegistrySubKey, 0, KEY_ALL_ACCESS, &regKey) != ERROR_SUCCESS)
 		if(RegCreateKey(HKEY_LOCAL_MACHINE, m_RegistrySubKey, &regKey) != ERROR_SUCCESS)
 		{
-			CLog::Instance()->AddLog("(SetRegValue) Error opening/creating registry key: HKEY_LOCAL_MACHINE\\%s", m_RegistrySubKey);
+			CLog::Instance()->AddLog(L"(SetRegValue) Error opening/creating registry key: HKEY_LOCAL_MACHINE\\%s", m_RegistrySubKey);
 			return;
 		}
 
 		//Sets key to value
 		if(RegSetValueEx(regKey, name, 0, REG_SZ, (UCHAR*)value.GetString(), (DWORD)value.GetLength() + 1) != ERROR_SUCCESS)
 		{
-			CLog::Instance()->AddLog("(SetRegValue) Error setting value! Key: %s  Value: %s", name, value);
+			CLog::Instance()->AddLog(L"(SetRegValue) Error setting value! Key: %s  Value: %s", name, value);
 			return;
 		}
 
@@ -120,21 +121,21 @@ CString CSettings::GetFromRegistry(CString name)
 	CHAR value[1024];
 	ULONG vLength = sizeof(value);
 	HKEY regKey;
-	CString ret = "";
+	CString ret = L"";
 
 	//Loads the stored value from the registry (Would like to change location of all values)
 	if(RegOpenKey(HKEY_LOCAL_MACHINE, m_RegistrySubKey, &regKey) == ERROR_SUCCESS)
 	{
 		//Get variable from registry
 		if(RegQueryValueEx(regKey, name, 0, 0, (UCHAR*)value, &vLength) == ERROR_SUCCESS)
-			ret.Format("%s", value);
+			ret.Format(L"%s", value);
 		else
 			SetToRegistry(name, ret);
 
 		RegCloseKey(regKey);
 	}
 	else
-		CLog::Instance()->AddLog("(GetRegValues) Error opening registry key: HKEY_LOCAL_MACHINE\\%s", m_RegistrySubKey);
+		CLog::Instance()->AddLog(L"(GetRegValues) Error opening registry key: HKEY_LOCAL_MACHINE\\%s", m_RegistrySubKey);
 
 	//Return value
 	return ret;

@@ -23,7 +23,7 @@ CLog::~CLog()
 /******************************************************************************
 Adds a Log Entry to the log file
 ******************************************************************************/
-void CLog::AddLog(const char * fmt, ...)
+void CLog::AddLog(const CString fmt, ...)
 {
 	CString temp;
 	va_list va_alist;
@@ -32,12 +32,12 @@ void CLog::AddLog(const char * fmt, ...)
 
 	time(&current_time);
 	localtime_s(current_tm, &current_time);
-	temp.Format("%02d:%02d:%02d-> ", current_tm->tm_hour, current_tm->tm_min, current_tm->tm_sec);
+	temp.Format(L"%02d:%02d:%02d-> ", current_tm->tm_hour, current_tm->tm_min, current_tm->tm_sec);
 
 	va_start(va_alist, fmt);
 	temp.AppendFormatV(fmt, va_alist);
 	va_end(va_alist);
-	temp.AppendFormat("\r\n");
+	temp.AppendFormat(L"\r\n");
 
 	CFile logFile(m_FullPath, CFile::modeCreate | CFile::modeWrite);
 	logFile.SeekToEnd();
@@ -51,7 +51,7 @@ Set location and name of log file
 void CLog::SetDirectory(const CString dir)
 {
 	m_Directory = dir;
-	m_FullPath.Format("%sUpdater Log.txt", m_Directory);
+	m_FullPath.Format(L"%sUpdater Log.txt", m_Directory);
 }
 
 /******************************************************************************

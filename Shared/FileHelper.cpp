@@ -35,7 +35,7 @@ bool CFileHelper::Delete(CString path)
 
 		if(!DeleteFile(path.GetString()))
 		{
-			CLog::Instance()->AddLog("(Delete File) DeleteFile Error: %d File: %s", GetLastError(), path);
+			CLog::Instance()->AddLog(L"(Delete File) DeleteFile Error: %d File: %s", GetLastError(), path);
 			return false;
 		}
 	}
@@ -47,7 +47,7 @@ bool CFileHelper::Move(CString dest, CString src)
 {
 	if(MoveFile(src, dest) == FALSE)
 	{
-		CLog::Instance()->AddLog("(Move File) MoveFile Error: %d Source: %s  Dest: %s", GetLastError(), src, dest);
+		CLog::Instance()->AddLog(L"(Move File) MoveFile Error: %d Source: %s  Dest: %s", GetLastError(), src, dest);
 		return false;
 	}
 
@@ -58,7 +58,7 @@ bool CFileHelper::Copy(CString dest, CString src)
 {
 	if(CopyFile(src, dest, false) == FALSE)
 	{
-		CLog::Instance()->AddLog("(Copy File) CopyFile Error: %d Source: %s  Dest: %s", GetLastError(), src, dest);
+		CLog::Instance()->AddLog(L"(Copy File) CopyFile Error: %d Source: %s  Dest: %s", GetLastError(), src, dest);
 		return false;
 	}
 
@@ -69,7 +69,7 @@ bool CFileHelper::SetFileNormal(CString path)
 {
 	if(Exists(path) && !SetFileAttributes(path.GetString(), FILE_ATTRIBUTE_NORMAL))
 	{
-		CLog::Instance()->AddLog("(Set File Normal) SetFileAttributes Error: %d File: %s", GetLastError(), path);
+		CLog::Instance()->AddLog(L"(Set File Normal) SetFileAttributes Error: %d File: %s", GetLastError(), path);
 		return false;
 	}
 
@@ -82,7 +82,7 @@ void CFileHelper::DirList(CArray<CFileObj> &arr, CString path, bool recursive)
 	CFileFind exFile;
 	CString findPath = path;
 	AddSlash(findPath);
-	findPath.AppendFormat("*.*");
+	findPath.AppendFormat(L"*.*");
 	BOOL bContinue = exFile.FindFile(findPath);
 
 	while(bContinue)
@@ -127,7 +127,7 @@ CString CFileHelper::GetChecksum(CString path)
 	}
 	else
 	{
-		CLog::Instance()->AddLog("(Get Checksum) Error Determining MD5 Checksum for: %s", path);
+		CLog::Instance()->AddLog(L"(Get Checksum) Error Determining MD5 Checksum for: %s", path);
 		md5Str.Empty();
 	}
 

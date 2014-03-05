@@ -3,13 +3,18 @@
 class CConfig
 {
 public:
-	static const char* APP_NAME;
-	static const char* MAIN_URL;
-	static const char* BACKUP_URL;
-	static const char* APP_TITLE;
-	static const char* PATCH_DIR;
-	static const char* HTML_NAME;
-	static const char* PRIMARY_UPDATER;
-	static const char* SECONDARY_UPDATER;
-	static const char* REGISTRY_SUBKEY;
+	static const CString PRODUCT_NAME;
+	static const CString APP_NAME;
+	static const CString MAIN_URL;
+	static const CString BACKUP_URL;
+	static const CString APP_TITLE;
+	static const CString PATCH_DIR;
+	static const CString HTML_NAME;
+	static const CString PRIMARY_UPDATER;
+	static const CString SECONDARY_UPDATER;
+	static const CString REGISTRY_SUBKEY;
+	static const CString PATCH_EXT;
+	static const CString NET_SESSION;
+	static const CString HELP_STRING;
+	static const CString LAUNCH_FILE;
 };
