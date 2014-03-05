@@ -150,6 +150,6 @@ $RECYCLE.BIN/
 # Mac crap
 .DS_Store
 Assets/
-VS */
+VS 2010/
 _DEBUG/
 _RELEASE/
