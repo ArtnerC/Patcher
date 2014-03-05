@@ -149,3 +149,11 @@ $RECYCLE.BIN/
 
 # Mac crap
 .DS_Store
+Assets/Apatch.h
+Assets/Config.cpp
+Assets/Patcher.ico
+Assets/Patcher.rc2
+Assets/aperror.h
+Assets/apkeys.h
+Assets/banner.bmp
+Assets/apatch.lib
