@@ -43,7 +43,7 @@ void PatchBuilder::BuildPatch()
 	Settings.Type = NORMAL;
 	if(!GetSettings())
 	{
-		m_pMainWnd->SetDlgItemText(IDC_STATUS, "Patch Creation FAILED! One or more specified paths were invalid...");
+		m_pMainWnd->SetDlgItemText(IDC_STATUS, L"Patch Creation FAILED! One or more specified paths were invalid...");
 		return;
 	}
 
@@ -58,7 +58,7 @@ void PatchBuilder::BuildJump()
 	Settings.Type = JUMP;
 	if(!GetSettings())
 	{
-		m_pMainWnd->SetDlgItemText(IDC_STATUS, "Patch Creation FAILED! One or more specified paths were invalid...");
+		m_pMainWnd->SetDlgItemText(IDC_STATUS, L"Patch Creation FAILED! One or more specified paths were invalid...");
 		return;
 	}
 
@@ -77,7 +77,7 @@ void PatchBuilder::BuildPatchFile()
 	Settings.Type = NORMAL;
 	if(!GetSettings())
 	{
-		m_pMainWnd->SetDlgItemText(IDC_STATUS, "Updater File Creation FAILED! One or more specified paths were invalid...");
+		m_pMainWnd->SetDlgItemText(IDC_STATUS, L"Updater File Creation FAILED! One or more specified paths were invalid...");
 		return;
 	}
 
@@ -93,7 +93,7 @@ void PatchBuilder::BuildProc()
 	m_pMainWnd->GetDlgItem(IDC_BUTTON_BUILD)->EnableWindow(FALSE);
 	m_pMainWnd->GetDlgItem(IDC_BUTTON_BUILD_UPDATER)->EnableWindow(FALSE);
 	m_pMainWnd->GetDlgItem(IDC_BUTTON_BUILD_JUMP)->EnableWindow(FALSE);
-	m_pMainWnd->SetDlgItemText(IDC_STATUS, "Processing Files. Please Wait...");
+	m_pMainWnd->SetDlgItemText(IDC_STATUS, L"Processing Files. Please Wait...");
 
 	//Initiates file lists
 	CArray<FileNode> oList, cList;
@@ -106,10 +106,10 @@ void PatchBuilder::BuildProc()
 	CFile file;
 	CString filePath, fileDir;
 
-	fileDir.Format("%scommands\\", Settings.OutputFolder);
+	fileDir.Format(L"%scommands\\", Settings.OutputFolder);
 	CreateDirectory(fileDir, NULL);
 
-	filePath.Format("%s%s.txt", fileDir, Settings.OldVer);
+	filePath.Format(L"%s%s.txt", fileDir, Settings.OldVer);
 	file.Open(filePath, CFile::modeCreate | CFile::modeWrite);
 
 	//Loops through all files and compares
@@ -123,7 +123,7 @@ void PatchBuilder::BuildProc()
 		fMissing = true;
 
 		CString status;
-		status.Format("Processing File: [%s] %d/%d Stage 1 of 2", oldFile.fileName, i, oList.GetUpperBound());
+		status.Format(L"Processing File: [%s] %d/%d Stage 1 of 2", oldFile.fileName, i, oList.GetUpperBound());
 		m_pMainWnd->SetDlgItemText(IDC_STATUS, status);
 
 		for(int j = 0; j <= cList.GetUpperBound(); j++)
@@ -135,8 +135,8 @@ void PatchBuilder::BuildProc()
 				if(oldFile.filePath.CompareNoCase(curFile.filePath) == 0)
 				{
 					CString oldPath, curPath;
-					oldPath.Format("%s%s", Settings.OldVerDir, oldFile.filePath);
-					curPath.Format("%s%s", Settings.CurrentVerDir, curFile.filePath);
+					oldPath.Format(L"%s%s", Settings.OldVerDir, oldFile.filePath);
+					curPath.Format(L"%s%s", Settings.CurrentVerDir, curFile.filePath);
 					fMissing = false;
 
 					if(getMD5(oldPath).CompareNoCase(getMD5(curPath)) != 0)
@@ -145,20 +145,20 @@ void PatchBuilder::BuildProc()
 						nChange++;
 
 						CString patchFileName, patchLoc;
-						patchFileName.Format("%s.pvp", curFile.fileName);
-						patchLoc.Format("%s%s", Settings.PatchPath, patchFileName);
+						patchFileName.Format(L"%s.%s", curFile.fileName, CConfig::PATCH_EXT);
+						patchLoc.Format(L"%s%s", Settings.PatchPath, patchFileName);
 
 						int fNum = 2;
 						while(FExists(patchLoc))
 						{
-							patchFileName.Format("%s%d.pvp", curFile.fileName, fNum);
-							patchLoc.Format("%s%s", Settings.PatchPath, patchFileName);
+							patchFileName.Format(L"%s%d.%s", curFile.fileName, fNum, CConfig::PATCH_EXT);
+							patchLoc.Format(L"%s%s", Settings.PatchPath, patchFileName);
 							fNum++;
 						}
 
 						//Line to write to file
 						CString line;
-						line.Format("patchfile %s/%s|%s\n", Settings.FilePatchDir, patchFileName, curFile.filePath);
+						line.Format(L"patchfile %s/%s|%s\n", Settings.FilePatchDir, patchFileName, curFile.filePath);
 						file.Write(line.GetString(), line.GetLength());
 
 						//Creates folder for patches if non existent
@@ -184,7 +184,7 @@ void PatchBuilder::BuildProc()
 
 				//Writes delete line to file
 				CString line;
-				line.Format("delfile %s\n", oldFile.filePath);
+				line.Format(L"delfile %s\n", oldFile.filePath);
 				file.Write(line.GetString(), line.GetLength());
 			}
 		}
@@ -197,7 +197,7 @@ void PatchBuilder::BuildProc()
 		fMissing = true;
 
 		CString status;
-		status.Format("Processing File: [%s] %d/%d Stage 2 of 2", curFile.fileName, i, cList.GetUpperBound());
+		status.Format(L"Processing File: [%s] %d/%d Stage 2 of 2", curFile.fileName, i, cList.GetUpperBound());
 		m_pMainWnd->SetDlgItemText(IDC_STATUS, status);
 
 		for(int j = 0; j <= oList.GetUpperBound(); j++)
@@ -215,20 +215,20 @@ void PatchBuilder::BuildProc()
 			nAdd++;
 
 			CString patchFileName, patchLoc;
-			patchFileName.Format("%s.temp", curFile.fileName);
-			patchLoc.Format("%s%s", Settings.PatchPath, patchFileName);
+			patchFileName.Format(L"%s.temp", curFile.fileName);
+			patchLoc.Format(L"%s%s", Settings.PatchPath, patchFileName);
 
 			int fNum = 2;
 			while(FExists(patchLoc))
 			{
-				patchFileName.Format("%s%d.temp", curFile.fileName, fNum);
-				patchLoc.Format("%s%s", Settings.PatchPath, patchFileName);
+				patchFileName.Format(L"%s%d.temp", curFile.fileName, fNum);
+				patchLoc.Format(L"%s%s", Settings.PatchPath, patchFileName);
 				fNum++;
 			}
 
 			//Write addfile line to file
 			CString line;
-			line.Format("addfile %s/%s|%s\n", Settings.FilePatchDir, patchFileName, curFile.filePath);
+			line.Format(L"addfile %s/%s|%s\n", Settings.FilePatchDir, patchFileName, curFile.filePath);
 			file.Write(line.GetString(), line.GetLength());
 
 			//Creates folder for patches if non existent
@@ -239,14 +239,14 @@ void PatchBuilder::BuildProc()
 
 			//Copies file to patch folder
 			CString curPath;
-			curPath.Format("%s%s", Settings.CurrentVerDir, curFile.filePath);
+			curPath.Format(L"%s%s", Settings.CurrentVerDir, curFile.filePath);
 			CopyFile(curPath, patchLoc, false);
 		}
 	}
 
 	//Adds new version line
 	CString ver;
-	ver.Format("setverif %s", Settings.CurrentVer);
+	ver.Format(L"setverif %s", Settings.CurrentVer);
 	file.Write(ver.GetString(), ver.GetLength());
 
 	//Closes the text file
@@ -257,16 +257,16 @@ void PatchBuilder::BuildProc()
 	{
 		m_pMainWnd->EnableWindow(FALSE);
 		m_pMainWnd->SetDlgItemText(IDC_OLD_VERSION, Settings.CurrentVer);
-		int newVer = atoi(Settings.CurrentVer.GetString());
+		int newVer = _wtoi(Settings.CurrentVer.GetString());
 		newVer++;
-		Settings.CurrentVer.Format("%d", newVer);
+		Settings.CurrentVer.Format(L"%d", newVer);
 		m_pMainWnd->SetDlgItemText(IDC_CURRENT_VERSION, Settings.CurrentVer);
 		m_pMainWnd->EnableWindow();
 	}
 
 	//Updates status and unlocks buttons
 	CString status;
-	status.Format("Done! Changed: %d, Deleted: %d, Added: %d, Old Files: %d, New Files: %d", nChange, nRem, nAdd, nOFiles, nCFiles);
+	status.Format(L"Done! Changed: %d, Deleted: %d, Added: %d, Old Files: %d, New Files: %d", nChange, nRem, nAdd, nOFiles, nCFiles);
 	m_pMainWnd->SetDlgItemText(IDC_STATUS, status);	
 	m_pMainWnd->GetDlgItem(IDC_BUTTON_BUILD)->EnableWindow();
 	m_pMainWnd->GetDlgItem(IDC_BUTTON_BUILD_UPDATER)->EnableWindow();
@@ -283,9 +283,9 @@ void PatchBuilder::DirSearch(CString path, CString basePath, CArray<FileNode> *l
 
 	append.Empty();
 	if(path.Mid(path.GetLength(), 1) != "\\")
-		append.Format("\\");
+		append.Format(L"\\");
 
-	searchdir.Format("%s%s*.*", path, append);
+	searchdir.Format(L"%s%s*.*", path, append);
 
 	find.FindFile(searchdir);
 	find.FindNextFile();
@@ -297,9 +297,9 @@ void PatchBuilder::DirSearch(CString path, CString basePath, CArray<FileNode> *l
 			else
 			{
 				FileNode temp;
-				temp.filePath.Format("%s", find.GetFilePath());
-				temp.filePath.Replace(basePath, "");
-				temp.fileName.Format("%s", find.GetFileName());
+				temp.filePath.Format(L"%s", find.GetFilePath());
+				temp.filePath.Replace(basePath, L"");
+				temp.fileName.Format(L"%s", find.GetFileName());
 				list->Add(temp);
 			}
 		}
@@ -310,9 +310,9 @@ void PatchBuilder::DirSearch(CString path, CString basePath, CArray<FileNode> *l
 		else
 		{
 			FileNode temp;
-			temp.filePath.Format("%s", find.GetFilePath());
-			temp.filePath.Replace(basePath, "");
-			temp.fileName.Format("%s", find.GetFileName());
+			temp.filePath.Format(L"%s", find.GetFilePath());
+			temp.filePath.Replace(basePath, L"");
+			temp.fileName.Format(L"%s", find.GetFileName());
 			list->Add(temp);
 		}
 	}
@@ -352,11 +352,11 @@ bool PatchBuilder::GetSettings()
 {	
 	//Locks and updates dialog
 	m_pMainWnd->EnableWindow(FALSE);
-	m_pMainWnd->SetDlgItemText(IDC_STATUS, "Accessing Settings...");
+	m_pMainWnd->SetDlgItemText(IDC_STATUS, L"Accessing Settings...");
 	
 	m_pMainWnd->GetDlgItemText(IDC_OUTPUT_FOLDER, Settings.OutputPath);
-	if(Settings.OutputPath.Right(1).CompareNoCase("\\"))
-		Settings.OutputPath.Append("\\");
+	if(Settings.OutputPath.Right(1).CompareNoCase(L"\\"))
+		Settings.OutputPath.Append(L"\\");
 	
 	m_pMainWnd->GetDlgItemText(IDC_CURRENT_VERSION, Settings.CurrentVer);
 	
@@ -365,23 +365,23 @@ bool PatchBuilder::GetSettings()
 	m_pMainWnd->GetDlgItemText(IDC_INSTALLER_VERSION, Settings.InstallerVer);
 
 	m_pMainWnd->GetDlgItemText(IDC_CURRENT_DIRECTORY, Settings.CurrentVerDir);
-	if(Settings.CurrentVerDir.Right(1).CompareNoCase("\\"))
-		Settings.CurrentVerDir.Append("\\");
+	if(Settings.CurrentVerDir.Right(1).CompareNoCase(L"\\"))
+		Settings.CurrentVerDir.Append(L"\\");
 	
 	m_pMainWnd->GetDlgItemText(IDC_OLD_DIRECTORY, Settings.OldVerDir);
-	if(Settings.OldVerDir.Right(1).CompareNoCase("\\"))
-		Settings.OldVerDir.Append("\\");
+	if(Settings.OldVerDir.Right(1).CompareNoCase(L"\\"))
+		Settings.OldVerDir.Append(L"\\");
 
 	m_pMainWnd->GetDlgItemText(IDC_INSTALLER_DIRECTORY, Settings.InstallerDir);
-	if(Settings.InstallerDir.Right(1).CompareNoCase("\\"))
-		Settings.InstallerDir.Append("\\");
+	if(Settings.InstallerDir.Right(1).CompareNoCase(L"\\"))
+		Settings.InstallerDir.Append(L"\\");
 	
 	m_pMainWnd->GetDlgItemText(IDC_FILE_PATCH_DIRECTORY, Settings.FilePatchDir);
 
 	//Gets path to updater files
 	m_pMainWnd->GetDlgItemText(IDC_UPDATER_DIRECTORY, Settings.UpdaterDir);
-	if(Settings.UpdaterDir.Right(1).CompareNoCase("\\"))
-		Settings.UpdaterDir.Append("\\");
+	if(Settings.UpdaterDir.Right(1).CompareNoCase(L"\\"))
+		Settings.UpdaterDir.Append(L"\\");
 
 	m_pMainWnd->GetDlgItemText(IDC_APPLIED_VERSION, Settings.UpdaterAppliedVer);
 
@@ -416,7 +416,7 @@ bool PatchBuilder::GetSettings()
 	Settings.MinorPatch = m_pMainWnd->IsDlgButtonChecked(IDC_MINOR_PATCH);
 	
 	//Enables window and updates status
-	m_pMainWnd->SetDlgItemText(IDC_STATUS, "Settings Aquired! Validating...");
+	m_pMainWnd->SetDlgItemText(IDC_STATUS, L"Settings Acquired! Validating...");
 	m_pMainWnd->EnableWindow();
 
 	if(!PathIsDirectory(Settings.OutputPath.GetString()))
@@ -431,33 +431,33 @@ bool PatchBuilder::GetSettings()
 		return false;
 
 	//Finds non-existent directory
-	Settings.OutputFolder.Format("%s", Settings.OutputPath);
+	Settings.OutputFolder.Format(L"%s", Settings.OutputPath);
 	if(Settings.Type == NORMAL)
-		Settings.OutputFolder.AppendFormat("%s", Settings.CurrentVer);
+		Settings.OutputFolder.AppendFormat(L"%s", Settings.CurrentVer);
 	else
-		Settings.OutputFolder.AppendFormat("Jump Patch");
+		Settings.OutputFolder.AppendFormat(L"Jump Patch");
 	CString temp, suffix;
 	int num = 1;
-	suffix.Format("\\");
-	temp.Format("%s%s", Settings.OutputFolder, suffix);
+	suffix.Format(L"\\");
+	temp.Format(L"%s%s", Settings.OutputFolder, suffix);
 	while(PathIsDirectory(temp))
 	{
 		num++;
-		suffix.Format(" [%d]\\", num);
-		temp.Format("%s%s", Settings.OutputFolder, suffix);
+		suffix.Format(L" [%d]\\", num);
+		temp.Format(L"%s%s", Settings.OutputFolder, suffix);
 	}
-	Settings.OutputFolder.AppendFormat("%s", suffix);
+	Settings.OutputFolder.AppendFormat(L"%s", suffix);
 	CreateDirectory(Settings.OutputFolder, NULL);
 
 	//Sets path to place patches
-	Settings.PatchesDir.Format("%spatches\\", Settings.OutputFolder);
+	Settings.PatchesDir.Format(L"%spatches\\", Settings.OutputFolder);
 	if(Settings.Type == NORMAL)
-		Settings.PatchPath.Format("%s%s\\", Settings.PatchesDir, Settings.FilePatchDir);
+		Settings.PatchPath.Format(L"%s%s\\", Settings.PatchesDir, Settings.FilePatchDir);
 	else
-		Settings.PatchPath.Format("%s%s\\", Settings.PatchesDir, Settings.InstallerVer);
+		Settings.PatchPath.Format(L"%s%s\\", Settings.PatchesDir, Settings.InstallerVer);
 
 	//Sets status
-	m_pMainWnd->SetDlgItemText(IDC_STATUS, "Settings Valid!");
+	m_pMainWnd->SetDlgItemText(IDC_STATUS, L"Settings Valid!");
 
 	return true;
 }
@@ -472,11 +472,11 @@ void PatchBuilder::BuildFile()
 	m_pMainWnd->GetDlgItem(IDC_BUTTON_BUILD)->EnableWindow(FALSE);
 	m_pMainWnd->GetDlgItem(IDC_BUTTON_BUILD_UPDATER)->EnableWindow(FALSE);
 	m_pMainWnd->GetDlgItem(IDC_BUTTON_BUILD_JUMP)->EnableWindow(FALSE);
-	m_pMainWnd->SetDlgItemText(IDC_STATUS, "Building Updater File...");
+	m_pMainWnd->SetDlgItemText(IDC_STATUS, L"Building Updater File...");
 
 	//Removes udata.txt if present
 	CString uFilePath;
-	uFilePath.Format("%spdata.txt", Settings.OutputFolder);
+	uFilePath.Format(L"%spdata.txt", Settings.OutputFolder);
 	if(PathFileExists(uFilePath))
 	{
 		SetFileAttributes(uFilePath, FILE_ATTRIBUTE_NORMAL);
@@ -491,41 +491,41 @@ void PatchBuilder::BuildFile()
 	{
 		//Writes version to file
 		CString ver;
-		ver.Format("remoteversion %s\n", Settings.UpdaterAppliedVer);
+		ver.Format(L"remoteversion %s\n", Settings.UpdaterAppliedVer);
 		file.Write(ver.GetString(), ver.GetLength());
 
 		//Cycles through files
 		CFileFind find;
 		
 		CString path, searchdir;
-		searchdir.Format("%s*.*", Settings.UpdaterDir);
+		searchdir.Format(L"%s*.*", Settings.UpdaterDir);
 		find.FindFile(searchdir);
 		find.FindNextFile();
 		while(find.FindNextFile())
 			if(!find.IsDirectory() && !find.IsDots())
 			{
 				//Writes line to udata.txt
-				path.Format("uddfile %s|%s\n", find.GetFileName(), getMD5(find.GetFilePath()));
+				path.Format(L"uddfile %s|%s\n", find.GetFileName(), getMD5(find.GetFilePath()));
 				file.Write(path.GetString(), path.GetLength());
 				i++;
 			}
 		if(!find.IsDirectory() && !find.IsDots())
 		{
 			//Writes line to udata.txt
-			path.Format("uddfile %s|%s\n", find.GetFileName(), getMD5(find.GetFilePath()));
+			path.Format(L"uddfile %s|%s\n", find.GetFileName(), getMD5(find.GetFilePath()));
 			file.Write(path.GetString(), path.GetLength());
 			i++;
 		}
 
 		//Write patchinfo line
 		CString patchInfo;
-		patchInfo.Format("uddfile Updater Log.txt|NULL\n");
-		patchInfo.AppendFormat("uddfile setup.txt|NULL\n");
+		patchInfo.Format(L"uddfile Updater Log.txt|NULL\n");
+		patchInfo.AppendFormat(L"uddfile setup.txt|NULL\n");
 		file.Write(patchInfo.GetString(), patchInfo.GetLength());
 
 		//Write checkupdatedir line
 		CString chkupdate;
-		chkupdate.Format("checkupdatedir");
+		chkupdate.Format(L"checkupdatedir");
 		file.Write(chkupdate.GetString(), chkupdate.GetLength());
 		
 		//Closes the file
@@ -534,7 +534,7 @@ void PatchBuilder::BuildFile()
 
 	//Sets status and unlocks buttons
 	CString status;
-	status.Format("File Created at: %s   Files: %d", uFilePath, i);
+	status.Format(L"File Created at: %s   Files: %d", uFilePath, i);
 	m_pMainWnd->SetDlgItemText(IDC_STATUS, status);
 	m_pMainWnd->GetDlgItem(IDC_BUTTON_BUILD)->EnableWindow();
 	m_pMainWnd->GetDlgItem(IDC_BUTTON_BUILD_UPDATER)->EnableWindow();

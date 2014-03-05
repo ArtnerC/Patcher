@@ -2,7 +2,6 @@
 // Microsoft Visual C++ generated include file.
 // Used by PatchBuilder.rc
 //
-#define IDR_MANIFEST                    1
 #define IDD_PATCHBUILDER_DIALOG         102
 #define IDR_MAINFRAME                   128
 #define IDC_CURRENT_DIRECTORY_BROWSE    1000

@@ -53,25 +53,25 @@ BOOL PBDlg::OnInitDialog()
 
 	//Sets up dialog with registry entries
 	CString temp;
-	temp = GetRegValue("OLDVERSION", "0");
+	temp = GetRegValue(L"OLDVERSION", L"0");
 	PBDlg::SetDlgItemText(IDC_OLD_VERSION, temp);
-	temp = GetRegValue("CURRENTVERSION", "1");
+	temp = GetRegValue(L"CURRENTVERSION", L"1");
 	PBDlg::SetDlgItemText(IDC_CURRENT_VERSION, temp);
-	temp = GetRegValue("INSTALLERVERSION", "0");
+	temp = GetRegValue(L"INSTALLERVERSION", L"0");
 	PBDlg::SetDlgItemText(IDC_INSTALLER_VERSION, temp);
 
-	temp = GetRegValue("OLDDIRECTORY", "");
+	temp = GetRegValue(L"OLDDIRECTORY", L"");
 	PBDlg::SetDlgItemText(IDC_OLD_DIRECTORY, temp);
-	temp = GetRegValue("CURRENTDIRECTORY", "");
+	temp = GetRegValue(L"CURRENTDIRECTORY", L"");
 	PBDlg::SetDlgItemText(IDC_CURRENT_DIRECTORY, temp);
-	temp = GetRegValue("UPDATERDIRECTORY", "");
+	temp = GetRegValue(L"UPDATERDIRECTORY", L"");
 	PBDlg::SetDlgItemText(IDC_UPDATER_DIRECTORY, temp);
-	temp = GetRegValue("OUTPUTDIRECTORY", "");
+	temp = GetRegValue(L"OUTPUTDIRECTORY", L"");
 	PBDlg::SetDlgItemText(IDC_OUTPUT_FOLDER, temp);
-	temp = GetRegValue("INSTALLERDIRECTORY", "");
+	temp = GetRegValue(L"INSTALLERDIRECTORY", L"");
 	PBDlg::SetDlgItemText(IDC_INSTALLER_DIRECTORY, temp);
 
-	//Sets checked states of appropriate checkboxes
+	//Sets checked states of appropriate check boxes
 	PBDlg::CheckDlgButton(IDC_DEFAULT_PATH, TRUE);
 	PBDlg::OnClickedDefaultPath();
 	PBDlg::CheckDlgButton(IDC_DEFAULT_VERSION, TRUE);
@@ -122,27 +122,27 @@ void PBDlg::OnClose()
 	//Sets registry values if valid
 	CString temp;
 	PBDlg::GetDlgItemText(IDC_OLD_VERSION, temp);
-	SetRegValue("OLDVERSION", temp);
+	SetRegValue(L"OLDVERSION", temp);
 	PBDlg::GetDlgItemText(IDC_CURRENT_VERSION, temp);
-	SetRegValue("CURRENTVERSION", temp);
+	SetRegValue(L"CURRENTVERSION", temp);
 	PBDlg::GetDlgItemText(IDC_INSTALLER_VERSION, temp);
-	SetRegValue("INSTALLERVERSION", temp);
+	SetRegValue(L"INSTALLERVERSION", temp);
 
 	PBDlg::GetDlgItemText(IDC_OLD_DIRECTORY, temp);
 	if(PathIsDirectory(temp.GetString()))
-		SetRegValue("OLDDIRECTORY", temp);
+		SetRegValue(L"OLDDIRECTORY", temp);
 	PBDlg::GetDlgItemText(IDC_CURRENT_DIRECTORY, temp);
 	if(PathIsDirectory(temp.GetString()))
-		SetRegValue("CURRENTDIRECTORY", temp);
+		SetRegValue(L"CURRENTDIRECTORY", temp);
 	PBDlg::GetDlgItemText(IDC_UPDATER_DIRECTORY, temp);
 	if(PathIsDirectory(temp.GetString()))
-		SetRegValue("UPDATERDIRECTORY", temp);
+		SetRegValue(L"UPDATERDIRECTORY", temp);
 	PBDlg::GetDlgItemText(IDC_OUTPUT_FOLDER, temp);
 	if(PathIsDirectory(temp.GetString()))
-		SetRegValue("OUTPUTDIRECTORY", temp);
+		SetRegValue(L"OUTPUTDIRECTORY", temp);
 	PBDlg::GetDlgItemText(IDC_INSTALLER_DIRECTORY, temp);
 	if(PathIsDirectory(temp.GetString()))
-		SetRegValue("INSTALLERDIRECTORY", temp);
+		SetRegValue(L"INSTALLERDIRECTORY", temp);
 
 	return PostQuitMessage(WM_QUIT);
 }
@@ -190,7 +190,7 @@ CString PBDlg::BrowseFolder(CString title)
 {
 	BROWSEINFO lpbi;
 	LPITEMIDLIST idl;
-	char buff[MAX_PATH];
+	wchar_t buff[MAX_PATH];
 	CString folder;
 	LPMALLOC pMalloc;
 
@@ -210,7 +210,7 @@ CString PBDlg::BrowseFolder(CString title)
 	{
 		if(SHGetPathFromIDList(idl, buff))
 		{
-			folder.Format("%s", buff);
+			folder.Format(L"%s", buff);
 		}
 	}
 
@@ -340,12 +340,11 @@ CString PBDlg::GetRegValue(CString key, CString def)
   CString val;
 
   //Loads the stored value from the registry
-  //TODO: MOve Key to Config, remove registry dependence altogether
-  if(RegOpenKey(HKEY_LOCAL_MACHINE,"Software\\Patch Builder",&regKey)==ERROR_SUCCESS)
+  if(RegOpenKey(HKEY_LOCAL_MACHINE,L"Software\\Patch Builder",&regKey)==ERROR_SUCCESS)
   {
 	vLength=255;
 	if(RegQueryValueEx(regKey,key.GetString(),0,0,(UCHAR*)value,&vLength)==ERROR_SUCCESS)
-		val.Format("%s", value);
+		val.Format(L"%s", value);
 	else
 		val = def;
 
@@ -370,8 +369,8 @@ BOOL PBDlg::SetRegValue(CString key, CString value)
   HKEY regKey;
 
   //Opens the key
-  if(RegOpenKeyEx(HKEY_LOCAL_MACHINE,"Software\\Patch Builder",0,KEY_ALL_ACCESS,&regKey)!=ERROR_SUCCESS)
-	  if(RegCreateKey(HKEY_LOCAL_MACHINE, "Software\\Patch Builder",&regKey))
+  if(RegOpenKeyEx(HKEY_LOCAL_MACHINE,L"Software\\Patch Builder",0,KEY_ALL_ACCESS,&regKey)!=ERROR_SUCCESS)
+	  if(RegCreateKey(HKEY_LOCAL_MACHINE, L"Software\\Patch Builder",&regKey))
 		  return PostMessage(WM_QUIT);
 
   //Sets the current version
