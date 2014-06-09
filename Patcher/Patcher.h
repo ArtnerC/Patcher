@@ -7,6 +7,7 @@ Includes
 
 #include "Config.h"
 #include "PatcherDlg.h"
+#include "HTTPClient.h"
 #include "Downloader.h"
 #include "FileHelper.h"
 #include "Settings.h"

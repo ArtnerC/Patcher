@@ -51,7 +51,7 @@
     <ClCompile Include="..\Patcher\TransStatic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Patcher\WindowsFirewall.cpp">
+    <ClCompile Include="..\Patcher\HTTPClient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -89,9 +89,6 @@
     <ClInclude Include="..\Patcher\Downloader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Patcher\Firewall.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\Patcher\Patcher.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -110,9 +107,6 @@
     <ClInclude Include="..\Patcher\TransStatic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Patcher\WindowsFirewall.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\Assets\Apatch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -120,6 +114,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Assets\apkeys.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Patcher\HTTPClient.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -133,6 +130,7 @@
     <None Include="..\Assets\Patcher.rc2">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\Patcher\Patcher.rc">

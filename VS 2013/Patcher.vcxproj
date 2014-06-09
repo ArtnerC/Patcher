@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="packages\cpprestsdk.2.0.1\build\native\cpprestsdk.props" Condition="Exists('packages\cpprestsdk.2.0.1\build\native\cpprestsdk.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -60,6 +61,7 @@
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Updater</TargetName>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">..\_$(Configuration)\</OutDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">Updater</TargetName>
+    <NuGetPackageImportStamp>8fb9e6f7</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
@@ -136,6 +138,7 @@
   <ItemGroup>
     <ClCompile Include="..\Assets\Config.cpp" />
     <ClCompile Include="..\Patcher\Downloader.cpp" />
+    <ClCompile Include="..\Patcher\HTTPClient.cpp" />
     <ClCompile Include="..\Shared\FileHelper.cpp" />
     <ClCompile Include="..\Shared\Log.cpp" />
     <ClCompile Include="..\Shared\MD5Checksum.cpp" />
@@ -146,17 +149,16 @@
     <ClCompile Include="..\Patcher\SimpleBrowser.cpp" />
     <ClCompile Include="..\Shared\stdafx.cpp" />
     <ClCompile Include="..\Patcher\TransStatic.cpp" />
-    <ClCompile Include="..\Patcher\WindowsFirewall.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Assets\Apatch.h" />
     <ClInclude Include="..\Assets\aperror.h" />
     <ClInclude Include="..\Assets\apkeys.h" />
+    <ClInclude Include="..\Patcher\HTTPClient.h" />
     <ClInclude Include="..\Shared\Command.h" />
     <ClInclude Include="..\Shared\Config.h" />
     <ClInclude Include="..\Patcher\Downloader.h" />
     <ClInclude Include="..\Shared\FileHelper.h" />
-    <ClInclude Include="..\Patcher\Firewall.h" />
     <ClInclude Include="..\Shared\Log.h" />
     <ClInclude Include="..\Shared\MD5Checksum.h" />
     <ClInclude Include="..\Shared\MD5ChecksumDefines.h" />
@@ -169,23 +171,31 @@
     <ClInclude Include="..\Patcher\SimpleBrowser.h" />
     <ClInclude Include="..\Shared\stdafx.h" />
     <ClInclude Include="..\Patcher\TransStatic.h" />
-    <ClInclude Include="..\Patcher\WindowsFirewall.h" />
     <ClInclude Include="..\Shared\targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Assets\banner.bmp" />
     <None Include="..\Assets\Patcher.ico" />
     <None Include="..\Assets\Patcher.rc2" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\Patcher\Patcher.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="packages\cpprestsdk.2.0.1\build\native\cpprestsdk.targets" Condition="Exists('packages\cpprestsdk.2.0.1\build\native\cpprestsdk.targets')" />
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
       <UserProperties RESOURCE_FILE="Patcher.rc" />
     </VisualStudio>
   </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\cpprestsdk.2.0.1\build\native\cpprestsdk.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\cpprestsdk.2.0.1\build\native\cpprestsdk.props'))" />
+    <Error Condition="!Exists('packages\cpprestsdk.2.0.1\build\native\cpprestsdk.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\cpprestsdk.2.0.1\build\native\cpprestsdk.targets'))" />
+  </Target>
 </Project>
